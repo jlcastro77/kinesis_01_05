@@ -3,6 +3,10 @@
 	<name>java-api_LmaxApiSample</name>
 	<comment></comment>
 	<projects>
+		<project>AWS_LMAX</project>
+		<project>Kinesis_LP</project>
+		<project>RemoteSystemsTempFiles</project>
+		<project>testConnect</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

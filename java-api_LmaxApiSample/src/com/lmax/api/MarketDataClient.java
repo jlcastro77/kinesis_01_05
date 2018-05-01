@@ -1,6 +1,7 @@
 package com.lmax.api;
 
 import java.io.FileNotFoundException;
+
 import java.lang.management.ManagementFactory;
 import java.sql.SQLException;
 import java.util.Date;
@@ -61,7 +62,12 @@ public class MarketDataClient implements LoginCallback, OrderBookEventListener, 
         
         if (instrumentInfoById.containsKey(instrumentId))
         {
-            instrumentInfoById.get(instrumentId).update(bestBid, bestAsk);
+            try {
+				instrumentInfoById.get(instrumentId).update(bestBid, bestAsk);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         }
     }
 
@@ -215,22 +221,27 @@ public class MarketDataClient implements LoginCallback, OrderBookEventListener, 
             return bestAsk.toString();
         }
         
-        public void update(FixedPointNumber bid, FixedPointNumber ask)
+        public void update(FixedPointNumber bid, FixedPointNumber ask) throws InterruptedException
         {
             bestBid = bid;
             bestAsk = ask;
             
             lastUpdate = System.currentTimeMillis();
             
-            //System.out.println(Long.toString(getInstrumentId()) + " " + getName() + " " + getLastUpdate() + " " + bid + " " + ask);
+            Kinessis_Process kinessis_Process = new Kinessis_Process();
+            kinessis_Process.Process();
             
-            Connect_Mysql connectMysql = new Connect_Mysql();
-            try {
-				connectMysql.declaracao(getInstrumentId(), getName(), getLastUpdate(), bid, ask);
-			} catch (SQLException e) {
-				
-				e.printStackTrace();
-			}
+            Kinessis_Process kinessis_Process_01 = new Kinessis_Process();
+            kinessis_Process_01.RecordDataKinesis(getInstrumentId(), getName(), getLastUpdate(), bid, ask);
+            
+            //System.out.println(Long.toString(getInstrumentId()) + " " + getName() + " " + getLastUpdate() + " " + bid + " " + ask);
+            //Connect_Mysql connectMysql = new Connect_Mysql();
+            //try {
+			//	connectMysql.declaracao(getInstrumentId(), getName(), getLastUpdate(), bid, ask);
+			//} catch (SQLException e) {
+			//	
+			//	e.printStackTrace();
+			//}
             
         }
     }

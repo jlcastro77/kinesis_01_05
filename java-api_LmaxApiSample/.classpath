@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="lib/java-api.jar" sourcepath="C:/Users/jolc2/Downloads/lmax-master (1).zip"/>
-	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.46-bin.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/mysql-connector-java-5.1.46-bin.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/aws-java-sdk-1.11.311.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/jolc2/.m2/repository/com/amazonaws.zip"/>
+	<classpathentry kind="lib" path="lib/java-api.jar" sourcepath="C:/LOG/Kimball/java-api-1.9.0/java-api/java-api-src.zip"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/Kinesis_LP"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
