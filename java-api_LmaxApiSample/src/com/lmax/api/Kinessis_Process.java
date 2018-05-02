@@ -1,6 +1,7 @@
 package com.lmax.api;
 
 import java.nio.ByteBuffer;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -23,6 +24,8 @@ import com.amazonaws.services.kinesis.model.ListStreamsResult;
 import com.amazonaws.services.kinesis.model.PutRecordsRequest;
 import com.amazonaws.services.kinesis.model.PutRecordsRequestEntry;
 import com.amazonaws.services.kinesis.model.PutRecordsResult;
+import com.amazonaws.services.kinesis.model.PutRecordRequest;
+import com.amazonaws.services.kinesis.model.PutRecordResult;
 import com.amazonaws.services.kinesis.model.ResourceNotFoundException;
 import com.amazonaws.services.kinesis.model.StreamDescription;
 
@@ -49,12 +52,12 @@ public class Kinessis_Process
 		
 		public void Process() throws InterruptedException 
 		{	
+						
 			GetCredentials();
-			//System.out.print("Teste33");
 			
 			//Name of Stream (Jorge - 04/11/2018.)
-	        final String myStreamName = "LP_V01";
-	        final Integer myStreamSize = 10;
+	        final String myStreamName = "LP_V07";
+	        final Integer myStreamSize = 40;
 
 	        // Describe the stream and check if it exists.
 	        DescribeStreamRequest describeStreamRequest = new DescribeStreamRequest().withStreamName(myStreamName);
@@ -69,7 +72,7 @@ public class Kinessis_Process
 
 	            // Wait for the stream to become active if it is not yet ACTIVE.
 	            if (!"ACTIVE".equals(streamDescription.getStreamStatus())) {
-	                waitForStreamToBecomeAvailable(myStreamName);
+	            	waitForStreamToBecomeAvailable(myStreamName);
 	            }
 	        } catch (ResourceNotFoundException ex) {
 	            //System.out.printf("Stream %s does not exist. Creating it now.\n", myStreamName);
@@ -84,77 +87,103 @@ public class Kinessis_Process
 	        }
 
 	        // List all of my streams.
-	        ListStreamsRequest listStreamsRequest = new ListStreamsRequest();
-	        listStreamsRequest.setLimit(10);
-	        ListStreamsResult listStreamsResult = kinesis.listStreams(listStreamsRequest);
-	        List<String> streamNames = listStreamsResult.getStreamNames();
-	        while (listStreamsResult.isHasMoreStreams()) {
-	            if (streamNames.size() > 0) {
-	                listStreamsRequest.setExclusiveStartStreamName(streamNames.get(streamNames.size() - 1));
-	            }
+	        //ListStreamsRequest listStreamsRequest = new ListStreamsRequest();
+	        //listStreamsRequest.setLimit(10);
+	        //ListStreamsResult listStreamsResult = kinesis.listStreams(listStreamsRequest);
+	        //List<String> streamNames = listStreamsResult.getStreamNames();
+	        //while (listStreamsResult.isHasMoreStreams()) {
+	         //   if (streamNames.size() > 0) {
+	           //     listStreamsRequest.setExclusiveStartStreamName(streamNames.get(streamNames.size() - 1));
+	            //}
 
-	            listStreamsResult = kinesis.listStreams(listStreamsRequest);
-	            streamNames.addAll(listStreamsResult.getStreamNames());
+	            //listStreamsResult = kinesis.listStreams(listStreamsRequest);
+	            //streamNames.addAll(listStreamsResult.getStreamNames());
 	        }
+	        
 	        // Print all of my streams.
 	        //System.out.println("List of my streams: ");
-	        for (int i = 0; i < streamNames.size(); i++) {
+	        //for (int i = 0; i < streamNames.size(); i++) {
 	            //System.out.println("\t- " + streamNames.get(i));
-	        }
-
-	        
-		}
+	        //}
+		
 	        
 	    public void RecordDataKinesis(long instrumentId, String instrumentName, Date lastUpdate, FixedPointNumber bid, FixedPointNumber ask) {
-	    	System.out.println(Long.toString(instrumentId) + " " + instrumentName + " " + lastUpdate + " " + bid + " " + ask);
+	    	//System.out.println(Long.toString(instrumentId) + " " + instrumentName + " " + lastUpdate + " " + bid + " " + ask);
+	    	final String myStreamName = "LP_V07";
+	        
+	    	//**********************************************************************************************************************
+	    	//   Simple Record
+	    	//**********************************************************************************************************************
+	    	long createTime = System.currentTimeMillis();
+	    	PutRecordRequest putRecordRequest = new PutRecordRequest();
+	    	putRecordRequest.setStreamName(myStreamName);
+	    	putRecordRequest.setData(ByteBuffer.wrap(String.format(Long.toString(instrumentId) + " " + instrumentName + " " + lastUpdate + " " + bid + " " + ask, createTime).getBytes()));
+	    	putRecordRequest.setPartitionKey(String.format("partitionKey-%d", createTime));
+	    	PutRecordResult putRecordResult = kinesis.putRecord(putRecordRequest);
+	    	System.out.printf("Successfully put record, partition key : %s, ShardID : %s, SequenceNumber : %s.\n",
+	    	putRecordRequest.getPartitionKey(),
+	    			putRecordResult.getShardId(),
+	    			putRecordResult.getSequenceNumber());
 	    	
-	    	final String myStreamName = "LP_V01";
+	    	//**********************************************************************************************************************
+	    	// Multiple Records
+	    	//**********************************************************************************************************************
 	    	
-	    	System.out.println("Getting Connection with Database ");
-	        ArrayList<String> items = new ArrayList<>();
+	    	//ArrayList<String> items = new ArrayList<>();
+    		//items.add(Long.toString(instrumentId));
+    		//items.add(instrumentName);
+    		//items.add(lastUpdate.toString());
+    		//items.add(bid.toString());
+    		//items.add(ask.toString());
+    		
+	    	//if (items.size() == 500)
+	    	//{
+    		
+	    		////Put Records (Jorge 04/11/2018)
+	    		//System.out.printf("Putting records in stream : %s until this application is stopped...\n", myStreamName);
+	    		//System.out.println("Press CTRL-C to stop.");
+	    		//// Write records to the stream until this program is aborted.
 	        
-	        //Put Records (Jorge 04/11/2018)
-	        System.out.printf("Putting records in stream : %s until this application is stopped...\n", myStreamName);
-	        System.out.println("Press CTRL-C to stop.");
-	        // Write records to the stream until this program is aborted.
+	    		////Multiple record
+	    		//AmazonKinesisClientBuilder clientBuilder = AmazonKinesisClientBuilder.standard();
+	    		//clientBuilder.setRegion("us-east-1");
+	    		//AmazonKinesis kinesisClient = clientBuilder.build();
 	        
-	        //Multiple record
-	        AmazonKinesisClientBuilder clientBuilder = AmazonKinesisClientBuilder.standard();
-	        clientBuilder.setRegion("us-east-1");
-	        AmazonKinesis kinesisClient = clientBuilder.build();
+	    		//PutRecordsRequest putRecordsRequest = new PutRecordsRequest();
+	    		//putRecordsRequest.setStreamName(myStreamName);
+	    		//List <PutRecordsRequestEntry> putRecordsRequestEntryList = new ArrayList<>();
 	        
-	        PutRecordsRequest putRecordsRequest = new PutRecordsRequest();
-	        putRecordsRequest.setStreamName(myStreamName);
-	        List <PutRecordsRequestEntry> putRecordsRequestEntryList = new ArrayList<>();
+	    		//int j = 0;
 	        
-	        int j = 0;
-	        int count = items.size();
+	    		//int count = items.size();
 	        
-	        
-	        while(j != items.size() ) 
-	        {
+	    		//while(j != items.size() ) 
+	    		//{
 	        	
-	        	
-	        		for (int i = 0; i < 100; i++) 
+	        		//for (int i = 0; i < 500; i++) 
 	        		
-	        		{
-	        			PutRecordsRequestEntry putRecordsRequestEntry  = new PutRecordsRequestEntry();
-	        			putRecordsRequestEntry.setData(ByteBuffer.wrap(String.format(items.get(j)).getBytes()));
-	        			putRecordsRequestEntry.setPartitionKey(String.format("partitionKey-%d", j));
-	        			putRecordsRequestEntryList.add(putRecordsRequestEntry);
-	        			j++;
-	        			count--;
+	        		//{
+	        			//PutRecordsRequestEntry putRecordsRequestEntry  = new PutRecordsRequestEntry();
+	        			//putRecordsRequestEntry.setData(ByteBuffer.wrap(String.format(items.get(j)).getBytes()));
+	        			//putRecordsRequestEntry.setPartitionKey(String.format("partitionKey-%d", j));
+	        			//putRecordsRequestEntryList.add(putRecordsRequestEntry);
+	        			//j++;
+	        			//count--;
 	        		
-	        		}
+	        		//}
 	        		
-	        		putRecordsRequest.setRecords(putRecordsRequestEntryList);
-	        		PutRecordsResult putRecordsResult  = kinesisClient.putRecords(putRecordsRequest);
-	        		System.out.println("Put Result" + " " + j  + putRecordsResult );
-	        		putRecordsRequestEntryList.clear();
+	        		//putRecordsRequest.setRecords(putRecordsRequestEntryList);
+	        		//PutRecordsResult putRecordsResult  = kinesisClient.putRecords(putRecordsRequest);
+	        		//System.out.println("Put Result" + " " + j  + putRecordsResult );
+	        		//putRecordsRequestEntryList.clear();
+	        		//items.clear();
 	        
-	        	 }
+	    		//}
+	    	//}
 	        	
-	       }
+	    	//**********************************************************************************************************************
+	    	
+	  }
 	     
 		private static void waitForStreamToBecomeAvailable(String myStreamName) throws InterruptedException {
 	        //System.out.printf("Waiting for %s to become ACTIVE...\n", myStreamName);

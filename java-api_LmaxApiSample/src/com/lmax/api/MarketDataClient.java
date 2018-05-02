@@ -234,15 +234,6 @@ public class MarketDataClient implements LoginCallback, OrderBookEventListener, 
             Kinessis_Process kinessis_Process_01 = new Kinessis_Process();
             kinessis_Process_01.RecordDataKinesis(getInstrumentId(), getName(), getLastUpdate(), bid, ask);
             
-            //System.out.println(Long.toString(getInstrumentId()) + " " + getName() + " " + getLastUpdate() + " " + bid + " " + ask);
-            //Connect_Mysql connectMysql = new Connect_Mysql();
-            //try {
-			//	connectMysql.declaracao(getInstrumentId(), getName(), getLastUpdate(), bid, ask);
-			//} catch (SQLException e) {
-			//	
-			//	e.printStackTrace();
-			//}
-            
         }
     }
 
