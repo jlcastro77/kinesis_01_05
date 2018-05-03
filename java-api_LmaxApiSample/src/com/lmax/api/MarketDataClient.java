@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 
 import java.lang.management.ManagementFactory;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +28,8 @@ import com.lmax.api.orderbook.SearchInstrumentRequest;
 public class MarketDataClient implements LoginCallback, OrderBookEventListener, StreamFailureListener
 {
     
+	public static List<String> items = new ArrayList<String>();
+	
 	private final Map<Long, InstrumentInfo> instrumentInfoById = new HashMap<Long, InstrumentInfo>();
     private int failureCount = 5;
     
@@ -227,6 +230,7 @@ public class MarketDataClient implements LoginCallback, OrderBookEventListener, 
             bestAsk = ask;
             
             lastUpdate = System.currentTimeMillis();
+            
             
             Kinessis_Process kinessis_Process = new Kinessis_Process();
             kinessis_Process.Process();

@@ -28,6 +28,7 @@ import com.amazonaws.services.kinesis.model.PutRecordRequest;
 import com.amazonaws.services.kinesis.model.PutRecordResult;
 import com.amazonaws.services.kinesis.model.ResourceNotFoundException;
 import com.amazonaws.services.kinesis.model.StreamDescription;
+import com.lmax.api.MarketDataClient;
 
 public class Kinessis_Process 
 {
@@ -56,8 +57,8 @@ public class Kinessis_Process
 			GetCredentials();
 			
 			//Name of Stream (Jorge - 04/11/2018.)
-	        final String myStreamName = "LP_V07";
-	        final Integer myStreamSize = 40;
+	        final String myStreamName = "LP_Lote_100_Vai_Curinthians";
+	        final Integer myStreamSize = 100;
 
 	        // Describe the stream and check if it exists.
 	        DescribeStreamRequest describeStreamRequest = new DescribeStreamRequest().withStreamName(myStreamName);
@@ -107,10 +108,12 @@ public class Kinessis_Process
 	        //}
 		
 	        
-	    public void RecordDataKinesis(long instrumentId, String instrumentName, Date lastUpdate, FixedPointNumber bid, FixedPointNumber ask) {
+	    @SuppressWarnings("static-access")
+		public void RecordDataKinesis(long instrumentId, String instrumentName, Date lastUpdate, FixedPointNumber bid, FixedPointNumber ask) {
 	    	//System.out.println(Long.toString(instrumentId) + " " + instrumentName + " " + lastUpdate + " " + bid + " " + ask);
-	    	final String myStreamName = "LP_V07";
-	        
+	    	
+	    	final String myStreamName = "LP_Lote_100_Vai_Curinthians";
+	    	
 	    	//**********************************************************************************************************************
 	    	//   Simple Record
 	    	//**********************************************************************************************************************
@@ -128,59 +131,58 @@ public class Kinessis_Process
 	    	//**********************************************************************************************************************
 	    	// Multiple Records
 	    	//**********************************************************************************************************************
+	    	//MarketDataClient marketDataClient = new MarketDataClient();
 	    	
-	    	//ArrayList<String> items = new ArrayList<>();
-    		//items.add(Long.toString(instrumentId));
-    		//items.add(instrumentName);
-    		//items.add(lastUpdate.toString());
-    		//items.add(bid.toString());
-    		//items.add(ask.toString());
-    		
-	    	//if (items.size() == 500)
+	    	//if(marketDataClient.items.size() != 100)
 	    	//{
-    		
-	    		////Put Records (Jorge 04/11/2018)
-	    		//System.out.printf("Putting records in stream : %s until this application is stopped...\n", myStreamName);
-	    		//System.out.println("Press CTRL-C to stop.");
-	    		//// Write records to the stream until this program is aborted.
-	        
-	    		////Multiple record
-	    		//AmazonKinesisClientBuilder clientBuilder = AmazonKinesisClientBuilder.standard();
-	    		//clientBuilder.setRegion("us-east-1");
-	    		//AmazonKinesis kinesisClient = clientBuilder.build();
-	        
-	    		//PutRecordsRequest putRecordsRequest = new PutRecordsRequest();
-	    		//putRecordsRequest.setStreamName(myStreamName);
-	    		//List <PutRecordsRequestEntry> putRecordsRequestEntryList = new ArrayList<>();
-	        
-	    		//int j = 0;
-	        
-	    		//int count = items.size();
-	        
-	    		//while(j != items.size() ) 
-	    		//{
-	        	
-	        		//for (int i = 0; i < 500; i++) 
-	        		
-	        		//{
-	        			//PutRecordsRequestEntry putRecordsRequestEntry  = new PutRecordsRequestEntry();
-	        			//putRecordsRequestEntry.setData(ByteBuffer.wrap(String.format(items.get(j)).getBytes()));
-	        			//putRecordsRequestEntry.setPartitionKey(String.format("partitionKey-%d", j));
-	        			//putRecordsRequestEntryList.add(putRecordsRequestEntry);
-	        			//j++;
-	        			//count--;
-	        		
-	        		//}
-	        		
-	        		//putRecordsRequest.setRecords(putRecordsRequestEntryList);
-	        		//PutRecordsResult putRecordsResult  = kinesisClient.putRecords(putRecordsRequest);
-	        		//System.out.println("Put Result" + " " + j  + putRecordsResult );
-	        		//putRecordsRequestEntryList.clear();
-	        		//items.clear();
-	        
-	    		//}
+	    	//	marketDataClient.items.add(Long.toString(instrumentId) + " " + instrumentName + " " + lastUpdate + " " + bid + " " + ask);
+	    		
 	    	//}
-	        	
+	    	
+	    	//if (marketDataClient.items.size() == 100)
+	    	//{
+	    	     //Put Records (Jorge 04/11/2018)
+	    		   //System.out.printf("Putting records in stream : %s until this application is stopped...\n", myStreamName);
+	    		   //System.out.println("Press CTRL-C to stop.");
+	    	       // Write records to the stream until this program is aborted.
+	    		   
+	    		    //Multiple record
+		    		//AmazonKinesisClientBuilder clientBuilder = AmazonKinesisClientBuilder.standard();
+		    		//clientBuilder.setRegion("us-east-1");
+		    		//AmazonKinesis kinesisClient = clientBuilder.build();
+		    		
+		    		//PutRecordsRequest putRecordsRequest = new PutRecordsRequest();
+		    		//putRecordsRequest.setStreamName(myStreamName);
+		    		//List <PutRecordsRequestEntry> putRecordsRequestEntryList = new ArrayList<>();
+		        
+		    		//int j = 0;
+		    		//int count = marketDataClient.items.size();
+		    		
+		    		//while(j != marketDataClient.items.size() ) 
+		    		//{
+		        	
+		        		//for (int i = 0; i < 100; i++) 
+		        		
+		        		//{
+		        			//PutRecordsRequestEntry putRecordsRequestEntry  = new PutRecordsRequestEntry();
+		        			//putRecordsRequestEntry.setData(ByteBuffer.wrap(String.format(marketDataClient.items.get(j)).getBytes()));
+		        			//putRecordsRequestEntry.setPartitionKey(String.format("partitionKey-%d", j));
+		        			//putRecordsRequestEntryList.add(putRecordsRequestEntry);
+		        			//j++;
+		        			//count--;
+		        		
+		        		//}
+		        		
+		        		//putRecordsRequest.setRecords(putRecordsRequestEntryList);
+		        		//PutRecordsResult putRecordsResult  = kinesisClient.putRecords(putRecordsRequest);
+		        		//System.out.println("Put Result" + " " + j  + putRecordsResult );
+		        		//putRecordsRequestEntryList.clear();
+		        		
+		    		//}
+		    	
+		    		//marketDataClient.items.clear();
+	        
+	    	//}
 	    	//**********************************************************************************************************************
 	    	
 	  }
